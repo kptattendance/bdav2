@@ -1,12 +1,11 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function Home() {
-  const user = await currentUser();
+import { useUser } from "@clerk/nextjs";
 
-  if (!user) {
-    redirect("/sign-in");
-  }
+export default function Home() {
+  const { user, isLoaded } = useUser();
 
-  return <div>Welcome {user.firstName}</div>;
+  if (!isLoaded) return null;
+
+  return <div>Welcome {user?.firstName || "Guest"}</div>;
 }
