@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import connectDB from "../config/db.js";
-
+import "dotenv/config";
 import userRoutes from "../routes/userRoutes.js";
 import rfidRoutes from "../routes/rfidRoutes.js";
 import filePreparationRoutes from "../routes/filePreparationRoutes.js";
