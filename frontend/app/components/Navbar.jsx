@@ -34,8 +34,13 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <SignInButton mode="redirect" forceRedirectUrl="/dashboard">
-              <button>Sign In</button>
+            <SignInButton mode="modal" forceRedirectUrl="/dashboard">
+              <button
+                className="bg-green-800 text-yellow-300 px-6 py-2 rounded-sm shadow 
+    hover:bg-green-700 hover:shadow-lg transition font-medium"
+              >
+                Sign In
+              </button>
             </SignInButton>
           )}
         </div>
