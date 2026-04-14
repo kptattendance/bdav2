@@ -12,7 +12,9 @@ export default function FilePreparationPage() {
   const fetchDocs = async () => {
     try {
       const res = await axiosInstance.get("/file-preparation");
-      setDocuments(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+      setDocuments(data);
     } catch (err) {
       console.error(err);
     }

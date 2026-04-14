@@ -30,7 +30,8 @@ export default function QualityPage() {
 
   useEffect(() => {
     axiosInstance.get("/quality").then((res) => {
-      setDocs(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      setDocs(data);
     });
   }, []);
 

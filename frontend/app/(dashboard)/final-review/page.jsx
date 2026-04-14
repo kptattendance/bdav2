@@ -10,8 +10,8 @@ export default function FinalReviewPage() {
 
   useEffect(() => {
     axiosInstance.get("/final-review").then((res) => {
-      setDocs(res.data);
-      console.log(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      setDocs(data);
     });
   }, []);
 

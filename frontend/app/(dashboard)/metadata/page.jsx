@@ -10,7 +10,8 @@ export default function MetadataPage() {
 
   useEffect(() => {
     axiosInstance.get("/metadata").then((res) => {
-      setDocs(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      setDocs(data);
     });
   }, []);
 

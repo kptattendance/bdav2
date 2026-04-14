@@ -18,7 +18,9 @@ export default function RFIDListPage() {
   useEffect(() => {
     const load = async () => {
       const res = await axiosInstance.get("/rfid/all");
-      setDocuments(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+      setDocuments(data);
     };
     load();
   }, []);

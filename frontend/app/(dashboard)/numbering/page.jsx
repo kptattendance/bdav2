@@ -33,7 +33,9 @@ export default function NumberingPage() {
 
   useEffect(() => {
     axiosInstance.get("/numbering").then((res) => {
-      setDocs(res.data);
+      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+      setDocs(data);
     });
   }, []);
 
