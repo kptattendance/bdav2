@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axiosInstance, { attachToken }  from "../../lib/axios";
+import axiosInstance, { attachToken } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@clerk/nextjs";
 export default function QualityPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
-const { getToken } = useAuth();
+  const { getToken } = useAuth();
 
-  attachToken(getToken); 
+  attachToken(getToken);
   const UserCell = ({ user }) => {
     if (!user) return <span className="text-gray-400">-</span>;
 
@@ -32,11 +32,12 @@ const { getToken } = useAuth();
   };
 
   useEffect(() => {
+    attachToken(getToken);
     axiosInstance.get("/quality").then((res) => {
       const data = Array.isArray(res.data) ? res.data : res.data.data || [];
       setDocs(data);
     });
-  }, []);
+  }, [getToken]);
 
   return (
     <div className="p-6 max-w-6xl mx-auto bg-gray-50 min-h-screen">

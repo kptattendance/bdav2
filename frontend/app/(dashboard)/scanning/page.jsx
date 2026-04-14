@@ -34,7 +34,7 @@ export default function ScanningPage() {
     attachToken(getToken);
 
     axiosInstance.get("/scanning").then((res) => {
-      setDocs(Array.isArray(res.data.data) ? res.data.data : []);
+      setDocs(Array.isArray(res.data) ? res.data : []);
       console.log(res.data);
     });
   }, [getToken]);
