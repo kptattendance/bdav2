@@ -10,8 +10,8 @@ export default function FinalReviewPage() {
   const router = useRouter();
   const { getToken } = useAuth();
 
-  attachToken(getToken);
   useEffect(() => {
+  attachToken(getToken);
     axiosInstance.get("/final-review").then((res) => {
       const data = Array.isArray(res.data) ? res.data : res.data.data || [];
       setDocs(data);
