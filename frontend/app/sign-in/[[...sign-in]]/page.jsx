@@ -1,3 +1,5 @@
+// app/sign-in/[[...sign-in]]/page.jsx
+
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { SignIn } from "@clerk/nextjs";
@@ -5,14 +7,10 @@ import { SignIn } from "@clerk/nextjs";
 export default function Page() {
   const { userId } = auth();
 
-  // 🔥 If already logged in → redirect
+  // ✅ SERVER SIDE redirect → NO flicker
   if (userId) {
     redirect("/dashboard");
   }
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <SignIn />
-    </div>
-  );
+  return <SignIn />;
 }
