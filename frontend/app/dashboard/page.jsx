@@ -1,55 +1,36 @@
-"use client";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+export default async function Dashboard() {
+  const { userId } = auth();
 
-export default function Dashboard() {
-  const { user, isLoaded, isSignedIn } = useUser();
-  const router = useRouter();
+  if (!userId) {
+    redirect("/sign-in");
+  }
 
-  useEffect(() => {
-    if (!isLoaded) return;
+  const user = await currentUser();
+  const role = user?.publicMetadata?.role;
 
-    if (!isSignedIn) {
-      router.replace("/sign-in");
-      return;
-    }
-
-    const role = user?.publicMetadata?.role;
-
-    switch (role) {
-      case "admin":
-        router.replace("/admin");
-        break;
-      case "RFIDTagging":
-        router.replace("/rfid");
-        break;
-      case "FilePreparation":
-        router.replace("/file-preparation");
-        break;
-      case "Numbering":
-        router.replace("/numbering");
-        break;
-      case "Scanning":
-        router.replace("/scanning");
-        break;
-      case "Quality":
-        router.replace("/quality");
-        break;
-      case "FinalReview":
-        router.replace("/final-review");
-        break;
-      case "Metadata":
-        router.replace("/metadata");
-        break;
-      case "DepartmentUser":
-        router.replace("/department");
-        break;
-      default:
-        router.replace("/dashboard");
-    }
-  }, [isLoaded, isSignedIn, user]);
-
-  return <div>Redirecting...</div>;
+  switch (role) {
+    case "admin":
+      redirect("/admin");
+    case "RFIDTagging":
+      redirect("/rfid");
+    case "FilePreparation":
+      redirect("/file-preparation");
+    case "Numbering":
+      redirect("/numbering");
+    case "Scanning":
+      redirect("/scanning");
+    case "Quality":
+      redirect("/quality");
+    case "FinalReview":
+      redirect("/final-review");
+    case "Metadata":
+      redirect("/metadata");
+    case "DepartmentUser":
+      redirect("/department");
+    default:
+      redirect("/");
+  }
 }

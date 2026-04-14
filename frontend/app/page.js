@@ -1,22 +1,12 @@
-"use client";
-
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  const { isSignedIn, isLoaded } = useUser();
-  const router = useRouter();
+  const { userId } = auth();
 
-  useEffect(() => {
-    if (!isLoaded) return;
+  if (!userId) {
+    redirect("/sign-in");
+  }
 
-    if (isSignedIn) {
-      router.replace("/dashboard"); // 🔥 redirect to dashboard
-    } else {
-      router.replace("/sign-in"); // optional
-    }
-  }, [isLoaded, isSignedIn]);
-
-  return <div>Loading...</div>;
+  redirect("/dashboard");
 }
