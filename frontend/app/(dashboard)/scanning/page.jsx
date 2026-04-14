@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axiosInstance, { attachToken }  from "../../lib/axios";
+import axiosInstance, { attachToken } from "../../lib/axios";
 
 import { useAuth } from "@clerk/nextjs";
 export default function ScanningPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
-const { getToken } = useAuth();
+  const { getToken } = useAuth();
 
-  attachToken(getToken); 
   const UserCard = ({ user }) => {
     if (!user) return <span>-</span>;
 
@@ -32,12 +31,13 @@ const { getToken } = useAuth();
   };
 
   useEffect(() => {
+    attachToken(getToken);
+
     axiosInstance.get("/scanning").then((res) => {
-      // setDocs(res.data);
       setDocs(Array.isArray(res.data.data) ? res.data.data : []);
       console.log(res.data);
     });
-  }, []);
+  }, [getToken]);
 
   return (
     <div className="p-6">
