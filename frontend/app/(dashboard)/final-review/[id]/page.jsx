@@ -1,7 +1,8 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import axiosInstance, { attachToken }  from "../../../lib/axios";
+import axiosInstance, { attachToken } from "../../../lib/axios";
 import { useParams, useRouter } from "next/navigation";
 
 export default function FinalReviewDetail() {
@@ -9,16 +10,16 @@ export default function FinalReviewDetail() {
   const router = useRouter();
   const { getToken } = useAuth();
 
-  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    attachToken(getToken);
     axiosInstance.get(`/final-review/${id}`).then((res) => {
       setDoc(res.data);
     });
-  }, [id]);
+  }, [id, getToken]);
 
   const handleApprove = async () => {
     setLoading(true);
