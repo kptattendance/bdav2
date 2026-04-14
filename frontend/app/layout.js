@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
       >
         <body className="min-h-full flex flex-col">
           <Navbar />
-          <div className="h-[1px] bg-gray-200">{children}</div>
+         <div className="flex-1">{children}</div>
         </body>
       </html>
     </ClerkProvider>

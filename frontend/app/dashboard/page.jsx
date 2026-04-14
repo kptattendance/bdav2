@@ -9,46 +9,47 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded) {
-      if (!isSignedIn) {
-        router.push("/sign-in");
-        return;
-      }
+    if (!isLoaded) return;
 
-      const role = user?.publicMetadata?.role;
+    if (!isSignedIn) {
+      router.replace("/sign-in");
+      return;
+    }
 
-      if (role === "admin") {
-        router.push("/admin");
-      }
-      if (role === "RFIDTagging") {
-        router.push("/rfid");
-      }
-      if (role === "FilePreparation") {
-        router.push("/file-preparation");
-      }
-      if (role === "Numbering") {
-        router.push("/numbering");
-      }
+    const role = user?.publicMetadata?.role;
 
-      if (role === "Scanning") {
-        router.push("/scanning");
-      }
-      if (role === "Quality") {
-        router.push("/quality");
-      }
-      if (role === "FinalReview") {
-        router.push("/final-review");
-      }
-      if (role === "Metadata") {
-        router.push("/metadata");
-      }
-      if (role === "DepartmentUser") {
-        router.push("/department");
-      }
+    switch (role) {
+      case "admin":
+        router.replace("/admin");
+        break;
+      case "RFIDTagging":
+        router.replace("/rfid");
+        break;
+      case "FilePreparation":
+        router.replace("/file-preparation");
+        break;
+      case "Numbering":
+        router.replace("/numbering");
+        break;
+      case "Scanning":
+        router.replace("/scanning");
+        break;
+      case "Quality":
+        router.replace("/quality");
+        break;
+      case "FinalReview":
+        router.replace("/final-review");
+        break;
+      case "Metadata":
+        router.replace("/metadata");
+        break;
+      case "DepartmentUser":
+        router.replace("/department");
+        break;
+      default:
+        router.replace("/");
     }
   }, [isLoaded, isSignedIn, user]);
 
-  if (!isLoaded) return <div>Loading...</div>;
-
-  return <div>User Dashboard</div>;
+  return <div>Redirecting...</div>;
 }

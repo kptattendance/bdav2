@@ -37,11 +37,6 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 min-h-screen bg-green-900 p-4">
-      {/* TITLE */}
-      <h2 className="text-white text-lg font-semibold text-center mb-6 tracking-wide">
-        DMS PANEL
-      </h2>
-
       {/* COMMON */}
       <MenuButton href="/dashboard" label="Dashboard" />
 
@@ -74,26 +69,6 @@ export default function Sidebar() {
 
           <MenuButton href="/file-preparation/upload" label="Details" />
           <MenuButton href="/file-preparation" label="List" />
-        </>
-      )}
-
-      {/* OFFICER */}
-      {role === "officer" && (
-        <>
-          <SectionTitle title="Officer Panel" />
-
-          <MenuButton href="/officer/search" label="Search Records" />
-          <MenuButton href="/officer/reports" label="View Reports" />
-        </>
-      )}
-
-      {/* CITIZEN */}
-      {role === "citizen" && (
-        <>
-          <SectionTitle title="Citizen Services" />
-
-          <MenuButton href="/citizen/search" label="Search Documents" />
-          <MenuButton href="/citizen/request" label="Request Copy" />
         </>
       )}
     </div>
