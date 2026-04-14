@@ -1,16 +1,16 @@
 import express from "express";
 import cors from "cors";
-import connectDB from "./config/db.js";
+import connectDB from "../config/db.js";
 
-import userRoutes from "./routes/userRoutes.js";
-import rfidRoutes from "./routes/rfidRoutes.js";
-import filePreparationRoutes from "./routes/filePreparationRoutes.js";
-import numberingRoutes from "./routes/numberingRoutes.js";
-import scanningRoutes from "./routes/scanningRoutes.js";
-import qualityRoutes from "./routes/qualityRoutes.js";
-import metadataRoutes from "./routes/metadataRoutes.js";
-import finalReviewRoutes from "./routes/finalReviewRoutes.js";
-import departmentRoutes from "./routes/departmentRoutes.js";
+import userRoutes from "../routes/userRoutes.js";
+import rfidRoutes from "../routes/rfidRoutes.js";
+import filePreparationRoutes from "../routes/filePreparationRoutes.js";
+import numberingRoutes from "../routes/numberingRoutes.js";
+import scanningRoutes from "../routes/scanningRoutes.js";
+import qualityRoutes from "../routes/qualityRoutes.js";
+import metadataRoutes from "../routes/metadataRoutes.js";
+import finalReviewRoutes from "../routes/finalReviewRoutes.js";
+import departmentRoutes from "../routes/departmentRoutes.js";
 
 import { clerkMiddleware } from "@clerk/express";
 
