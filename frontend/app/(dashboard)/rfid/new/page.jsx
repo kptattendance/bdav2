@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 import axiosInstance from "../../../lib/axios";
 import { useRouter } from "next/navigation";

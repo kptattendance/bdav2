@@ -5,6 +5,7 @@ import axiosInstance from "../../../lib/axios";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 
+import { useAuth } from "@clerk/nextjs";
 export default function MetadataDetail() {
   const { id } = useParams();
   const router = useRouter();

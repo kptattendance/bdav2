@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axiosInstance from "../../lib/axios";
 
+import { useAuth } from "@clerk/nextjs";
 export default function FilePreparationPage() {
   const [documents, setDocuments] = useState([]);
   const [loadingId, setLoadingId] = useState(null);

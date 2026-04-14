@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../../lib/axios";
 import { useParams, useRouter } from "next/navigation";
 
+import { useAuth } from "@clerk/nextjs";
 export default function DepartmentDetail() {
   const { id } = useParams();
   const router = useRouter();
-const { getToken } = useAuth();
+  const { getToken } = useAuth();
 
-  attachToken(getToken); 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [loading, setLoading] = useState(false);
 

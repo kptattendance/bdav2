@@ -1,9 +1,11 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
+import { useAuth } from "@clerk/nextjs";
 export default function FinalReviewPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();

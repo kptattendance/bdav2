@@ -5,6 +5,7 @@ import axiosInstance from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
+import { useAuth } from "@clerk/nextjs";
 export default function RFIDListPage() {
   const router = useRouter();
   const { getToken } = useAuth();

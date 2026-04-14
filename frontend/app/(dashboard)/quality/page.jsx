@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
 import { useRouter } from "next/navigation";
 
+import { useAuth } from "@clerk/nextjs";
 export default function QualityPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
