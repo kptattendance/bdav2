@@ -47,7 +47,7 @@ export default function Dashboard() {
         router.replace("/department");
         break;
       default:
-        router.replace("/");
+        router.replace("/dashboard");
     }
   }, [isLoaded, isSignedIn, user]);
 
