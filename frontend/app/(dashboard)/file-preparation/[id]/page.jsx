@@ -3,7 +3,7 @@
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axiosInstance from "../../../lib/axios";
+import axiosInstance, { attachToken }  from "../../../lib/axios";
 import { useUser } from "@clerk/nextjs";
 
 export default function FilePreparationDetail() {

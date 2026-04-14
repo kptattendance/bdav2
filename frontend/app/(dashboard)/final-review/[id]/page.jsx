@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axiosInstance from "../../../lib/axios";
+import axiosInstance, { attachToken }  from "../../../lib/axios";
 import { useParams, useRouter } from "next/navigation";
 
 export default function FinalReviewDetail() {

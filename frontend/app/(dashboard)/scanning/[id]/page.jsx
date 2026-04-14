@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axiosInstance from "../../../lib/axios";
+import axiosInstance, { attachToken }  from "../../../lib/axios";
 
 import { useAuth } from "@clerk/nextjs";
 export default function ScanningDetail() {

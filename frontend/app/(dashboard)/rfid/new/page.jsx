@@ -2,7 +2,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
-import axiosInstance from "../../../lib/axios";
+import axiosInstance, { attachToken }  from "../../../lib/axios";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 export default function RFIDPage() {

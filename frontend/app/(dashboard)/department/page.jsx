@@ -2,7 +2,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import axiosInstance from "../../lib/axios";
+import axiosInstance, { attachToken } from "../../lib/axios";
 import Link from "next/link";
 
 export default function DepartmentPage() {
