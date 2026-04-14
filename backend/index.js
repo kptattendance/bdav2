@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -16,28 +15,26 @@ import departmentRoutes from "./routes/departmentRoutes.js";
 import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// ✅ Connect DB
-connectDB();
-
+// ✅ Middlewares
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://bdapro.vercel.app"],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 
-// Clerk middleware
+// ✅ Clerk middleware
 app.use(clerkMiddleware());
 
-// Public route
+// ✅ Root route
 app.get("/", (req, res) => {
-  res.send("API Running...");
+  res.send("API Running 🚀");
 });
 
-// Routes
+// ✅ Routes
 app.use("/api/users", userRoutes);
 app.use("/api/rfid", rfidRoutes);
 app.use("/api/numbering", numberingRoutes);
@@ -47,7 +44,9 @@ app.use("/api/quality", qualityRoutes);
 app.use("/api/metadata", metadataRoutes);
 app.use("/api/final-review", finalReviewRoutes);
 app.use("/api/department", departmentRoutes);
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+// ✅ Serverless handler
+export default async function handler(req, res) {
+  await connectDB(); // ensure DB connection
+  return app(req, res);
+}

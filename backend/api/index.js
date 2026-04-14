@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
@@ -19,8 +18,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ✅ Connect DB
-connectDB();
-
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://bdapro.vercel.app"],
@@ -51,3 +48,8 @@ app.use("/api/department", departmentRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+export default async function handler(req, res) {
+  await connectDB();
+  return app(req, res);
+}
