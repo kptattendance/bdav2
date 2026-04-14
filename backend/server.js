@@ -21,10 +21,9 @@ const PORT = process.env.PORT || 5000;
 // ✅ Connect DB
 connectDB();
 
-// Middlewares
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://bdapro.vercel.app"],
     credentials: true,
   }),
 );
