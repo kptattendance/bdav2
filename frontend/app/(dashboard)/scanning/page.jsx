@@ -30,8 +30,8 @@ export default function ScanningPage() {
 
   useEffect(() => {
     axiosInstance.get("/scanning").then((res) => {
-      setDocs(res.data);
-      // setDocs(Array.isArray(res.data.data) ? res.data.data : []);
+      // setDocs(res.data);
+      setDocs(Array.isArray(res.data.data) ? res.data.data : []);
       console.log(res.data);
     });
   }, []);
