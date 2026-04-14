@@ -8,7 +8,9 @@ export default function FilePreparationPage() {
   const [documents, setDocuments] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const fetchDocs = async () => {
     try {
       const res = await axiosInstance.get("/file-preparation");

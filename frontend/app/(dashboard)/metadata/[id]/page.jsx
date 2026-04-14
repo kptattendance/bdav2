@@ -9,7 +9,9 @@ export default function MetadataDetail() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useUser();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [subject, setSubject] = useState("");
   const [year, setYear] = useState("");

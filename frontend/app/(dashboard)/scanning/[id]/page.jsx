@@ -7,7 +7,9 @@ import axiosInstance from "../../../lib/axios";
 export default function ScanningDetail() {
   const { id } = useParams();
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [noteFiles, setNoteFiles] = useState([]);
   const [mainFiles, setMainFiles] = useState([]);

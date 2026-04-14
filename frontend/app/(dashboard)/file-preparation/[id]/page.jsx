@@ -9,7 +9,9 @@ export default function FilePreparationDetail() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useUser();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [description, setDescription] = useState("");
   const [preparedDate, setPreparedDate] = useState("");

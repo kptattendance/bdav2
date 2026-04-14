@@ -7,7 +7,9 @@ import { useRouter } from "next/navigation";
 export default function MetadataPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   useEffect(() => {
     axiosInstance.get("/metadata").then((res) => {
       const data = Array.isArray(res.data) ? res.data : res.data.data || [];

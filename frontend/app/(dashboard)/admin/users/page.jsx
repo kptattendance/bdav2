@@ -10,6 +10,8 @@ export default function UsersPage() {
   const router = useRouter();
   const { getToken } = useAuth();
 
+  attachToken(getToken);
+
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
 

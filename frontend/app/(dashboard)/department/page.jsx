@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../lib/axios";
 import Link from "next/link";
+
 export default function DepartmentPage() {
   const [docs, setDocs] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -10,6 +11,10 @@ export default function DepartmentPage() {
   const [btnLoading, setBtnLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
+
+  const { getToken } = useAuth();
+
+  attachToken(getToken);
   useEffect(() => {
     const fetchDocs = async () => {
       try {

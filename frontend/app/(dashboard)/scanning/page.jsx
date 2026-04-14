@@ -7,7 +7,9 @@ import axiosInstance from "../../lib/axios";
 export default function ScanningPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
+const { getToken } = useAuth();
 
+  attachToken(getToken); 
   const UserCard = ({ user }) => {
     if (!user) return <span>-</span>;
 
