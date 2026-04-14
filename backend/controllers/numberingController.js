@@ -5,6 +5,7 @@ import User from "../models/User.js";
 export const getPreparedDocs = async (req, res) => {
   try {
     const docs = await Document.find({ status: "FILE_PREPARED" })
+      .populate("rfidTaggedBy", "firstName lastName phone profileImage")
       .populate("filePreparedBy", "firstName lastName phone profileImage")
       .sort({ createdAt: -1 });
 
@@ -17,10 +18,9 @@ export const getPreparedDocs = async (req, res) => {
 // 🔹 GET SINGLE
 export const getSingleNumberingDoc = async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id).populate(
-      "filePreparedBy",
-      "firstName lastName",
-    );
+    const doc = await Document.findById(req.params.id)
+      .populate("rfidTaggedBy", "firstName lastName phone profileImage")
+      .populate("filePreparedBy", "firstName lastName phone profileImage");
 
     res.status(200).json(doc);
   } catch (err) {

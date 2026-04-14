@@ -62,7 +62,6 @@ export default function RFIDPage() {
     formData.append("image", image);
 
     try {
-      // 🔥 LOADING ANIMATION
       Swal.fire({
         title: "Processing...",
         text: "Uploading & Saving Document",
@@ -74,14 +73,29 @@ export default function RFIDPage() {
 
       await axiosInstance.post("/rfid", formData);
 
-      // 🔥 SUCCESS
+      // ✅ SUCCESS ALERT
       Swal.fire({
         icon: "success",
         title: "Saved Successfully",
         text: "Document has been created",
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false,
       });
+
+      // 🔥 RESET FORM (THIS IS WHAT YOU NEED)
+      setForm({
+        rfid: "",
+        department: "",
+        subDepartment: "",
+        fileName: "",
+        fileSubject: "",
+        fileDescription: "",
+        fileYear: "",
+        fileSharedBy: "",
+      });
+
+      setImage(null);
+      setPreview(null);
     } catch (err) {
       console.error(err);
 
@@ -221,8 +235,12 @@ export default function RFIDPage() {
           <div className="bg-green-900 text-yellow-400 px-4 py-2 inline-block border border-yellow-500">
             Cover Image
           </div>
-
-          <input type="file" onChange={handleImage} className="mt-3" />
+          <input
+            key={preview || ""} // 🔥 forces reset
+            type="file"
+            onChange={handleImage}
+            className="mt-3"
+          />
 
           {preview && (
             <div className="mt-4 flex justify-center">

@@ -7,30 +7,11 @@ export const getRFIDDocuments = async (req, res) => {
   try {
     const docs = await Document.find({
       status: "RFID_TAGGED",
-    }).sort({ createdAt: -1 });
+    })
+      .populate("rfidTaggedBy", "firstName lastName email phone profileImage")
+      .sort({ createdAt: -1 });
 
-    // 🔥 Attach user details
-    const enrichedDocs = await Promise.all(
-      docs.map(async (doc) => {
-        const user = await User.findOne({
-          clerkId: doc.rfidTaggedBy,
-        });
-
-        return {
-          ...doc._doc,
-          taggedUser: user
-            ? {
-                name: `${user.firstName} ${user.lastName || ""}`,
-                email: user.email,
-                phone: user.phone,
-                image: user.profileImage,
-              }
-            : null,
-        };
-      }),
-    );
-
-    res.json(enrichedDocs);
+    res.json(docs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -39,25 +20,12 @@ export const getRFIDDocuments = async (req, res) => {
 // 🔹 GET SINGLE DOC
 export const getDocumentById = async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await Document.findById(req.params.id).populate(
+      "rfidTaggedBy",
+      "firstName lastName email phone profileImage"
+    );
 
-    const user = await User.findOne({
-      clerkId: doc.rfidTaggedBy,
-    });
-
-    const enrichedDoc = {
-      ...doc._doc,
-      taggedUser: user
-        ? {
-            name: `${user.firstName} ${user.lastName || ""}`,
-            email: user.email,
-            phone: user.phone,
-            image: user.profileImage,
-          }
-        : null,
-    };
-
-    res.json(enrichedDoc);
+    res.json(doc);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -82,12 +50,17 @@ export const createDocument = async (req, res) => {
       fileSharedBy,
     } = req.body;
 
-    // 🔥 VALIDATION (IMPORTANT)
     if (!rfid || !department || !subDepartment || !fileName) {
       return res.status(400).json({
         message: "Missing required fields",
-        body: req.body,
       });
+    }
+
+    // 🔥 FIX: get Mongo user
+    const user = await User.findOne({ clerkId: req.userId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     const doc = await Document.create({
@@ -100,7 +73,7 @@ export const createDocument = async (req, res) => {
       fileYear,
       fileSharedBy,
 
-      rfidTaggedBy: req.userId,
+      rfidTaggedBy: user._id, // ✅ FIXED
       coverImage: result.secure_url,
 
       status: "RFID_TAGGED",

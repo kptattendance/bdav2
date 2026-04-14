@@ -5,8 +5,10 @@ import User from "../models/User.js";
 export const getNumberedDocs = async (req, res) => {
   try {
     const docs = await Document.find({ status: "NUMBERED" })
+      .populate("rfidTaggedBy", "firstName lastName phone profileImage")
       .populate("filePreparedBy", "firstName lastName phone profileImage")
-      .populate("pageNumberedBy", "firstName lastName phone profileImage");
+      .populate("pageNumberedBy", "firstName lastName phone profileImage")
+      .populate("scannedBy", "firstName lastName phone profileImage");
 
     res.json(docs);
   } catch (err) {
@@ -17,8 +19,10 @@ export const getNumberedDocs = async (req, res) => {
 // 🔹 GET SINGLE
 export const getSingleScanDoc = async (req, res) => {
   const doc = await Document.findById(req.params.id)
-    .populate("filePreparedBy", "firstName lastName")
-    .populate("pageNumberedBy", "firstName lastName");
+    .populate("rfidTaggedBy", "firstName lastName phone profileImage")
+    .populate("filePreparedBy", "firstName lastName phone profileImage")
+    .populate("pageNumberedBy", "firstName lastName phone profileImage")
+    .populate("scannedBy", "firstName lastName phone profileImage");
 
   res.json(doc);
 };
@@ -29,7 +33,9 @@ export const saveScans = async (req, res) => {
     const { id } = req.params;
 
     const user = await User.findOne({ clerkId: req.userId });
-
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const doc = await Document.findById(id);
 
     if (!doc) return res.status(404).json({ message: "Not found" });

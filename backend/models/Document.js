@@ -2,13 +2,16 @@ import mongoose from "mongoose";
 
 const documentSchema = new mongoose.Schema(
   {
+    // 🔹 BASIC INFO
     rfid: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
+
     coverImage: String,
+
     department: {
       type: String,
       required: true,
@@ -26,19 +29,17 @@ const documentSchema = new mongoose.Schema(
 
     fileDescription: String,
     fileSubject: String,
-
     fileYear: Number,
 
-    // 🔥 MAIN DATES
+    fileSharedBy: String, // (can convert to ObjectId later if needed)
+
+    // 🔹 MAIN DATE
     receivedDate: {
       type: Date,
       default: Date.now,
     },
 
-    fileSharedBy: String,
-
-    // 🔥 WORKFLOW USERS + DATES
-
+    // 🔥 RFID STAGE
     rfidTaggedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -48,52 +49,81 @@ const documentSchema = new mongoose.Schema(
       default: Date.now,
     },
 
+    // 🔥 FILE PREPARATION
     filePreparedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     filePreparedAt: Date,
 
+    // 🔥 NUMBERING
     notePages: Number,
     mainPages: Number,
     coverPages: Number,
+
     pageNumberedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     pageNumberedAt: Date,
 
+    // 🔥 SCANNING
     scannedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     scannedAt: Date,
 
+    noteFiles: [String],
+    mainFiles: [String],
+    coverFiles: [String],
+
+    // 🔥 QUALITY CHECK
     qualityCheckedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     qualityCheckedAt: Date,
 
+    // 🔥 METADATA
     metadataAddedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     metadataAddedAt: Date,
 
-rejectionReason: String,
-rejectedToStage: String,
-rejectedToUser: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "User",
-},
+    // 🔥 REJECTION TRACKING
+    rejectionReason: String,
 
+    rejectedToStage: String,
+
+    rejectedToUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    rejectedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    rejectedAt: Date,
+
+    // 🔥 FINAL APPROVAL
     finalApprovedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
     finalApprovedAt: Date,
 
+    // 🔥 DEPARTMENT APPROVAL (LAST STAGE)
+    departmentApprovedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    departmentApprovedAt: Date,
+
+    // 🔥 STATUS FLOW
     status: {
       type: String,
       enum: [
@@ -104,11 +134,16 @@ rejectedToUser: {
         "QUALITY_CHECKED",
         "METADATA_ADDED",
         "APPROVED",
+        "DEPARTMENT_APPROVED",
       ],
       default: "RFID_TAGGED",
     },
   },
   { timestamps: true },
 );
+
+// 🔥 INDEXES (IMPORTANT FOR PERFORMANCE)
+documentSchema.index({ status: 1 });
+documentSchema.index({ department: 1 });
 
 export default mongoose.model("Document", documentSchema);

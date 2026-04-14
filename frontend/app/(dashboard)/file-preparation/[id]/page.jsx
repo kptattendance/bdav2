@@ -19,6 +19,9 @@ export default function FilePreparationDetail() {
     axiosInstance.get(`/file-preparation/${id}`).then((res) => {
       setDoc(res.data);
       setDescription(res.data.fileDescription || "");
+
+      // ✅ Auto set today's date
+      setPreparedDate(new Date().toISOString().split("T")[0]);
     });
   }, []);
 
@@ -28,7 +31,7 @@ export default function FilePreparationDetail() {
 
       await axiosInstance.put(`/file-preparation/${id}`, {
         fileDescription: description,
-        filePreparedAt: preparedDate,
+        filePreparedAt: preparedDate || new Date().toISOString().split("T")[0],
       });
 
       alert("File Prepared Successfully ✅");
@@ -54,7 +57,7 @@ export default function FilePreparationDetail() {
         Editable fields are highlighted below.
       </p>
 
-      {/* FILE INFO (READ ONLY) */}
+      {/* FILE INFO */}
       <div className="mb-8">
         <h2 className="text-green-700 font-semibold mb-3">File Information</h2>
 
@@ -72,7 +75,30 @@ export default function FilePreparationDetail() {
         <h2 className="text-green-700 font-semibold mb-4">RFID Details</h2>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <ReadField label="Tagged By" value={doc.rfidTaggedBy} />
+          {/* ✅ FIXED USER DISPLAY */}
+          <div className="flex items-center gap-3">
+            <img
+              src={doc.rfidTaggedBy?.profileImage || "/avatar.png"}
+              className="w-10 h-10 rounded-full border"
+            />
+
+            <div>
+              <div className="text-xs text-gray-400 uppercase">Tagged By</div>
+
+              <div className="font-medium text-gray-800">
+                {doc.rfidTaggedBy
+                  ? `${doc.rfidTaggedBy.firstName} ${
+                      doc.rfidTaggedBy.lastName || ""
+                    }`
+                  : "-"}
+              </div>
+
+              <div className="text-xs text-gray-500">
+                {doc.rfidTaggedBy?.phone || ""}
+              </div>
+            </div>
+          </div>
+
           <ReadField
             label="Tagged Date"
             value={new Date(doc.rfidTaggedAt).toLocaleDateString()}
@@ -80,7 +106,7 @@ export default function FilePreparationDetail() {
         </div>
       </div>
 
-      {/* EDITABLE SECTION */}
+      {/* EDITABLE */}
       <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
         <h2 className="text-green-700 font-semibold mb-4">
           File Preparation (Editable)
@@ -119,7 +145,11 @@ export default function FilePreparationDetail() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow-md"
+          className={`px-6 py-2 rounded-lg shadow-md text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
         >
           {loading ? "Saving..." : "Save & Continue"}
         </button>

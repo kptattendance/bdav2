@@ -11,6 +11,7 @@ export default function RFIDListPage() {
   const [documents, setDocuments] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loadingId, setLoadingId] = useState(null);
 
   const itemsPerPage = 5;
 
@@ -19,7 +20,6 @@ export default function RFIDListPage() {
       const res = await axiosInstance.get("/rfid/all");
       setDocuments(res.data);
     };
-
     load();
   }, []);
 
@@ -64,7 +64,6 @@ export default function RFIDListPage() {
       {/* TABLE */}
       <div className="bg-white shadow rounded border overflow-hidden">
         <table className="w-full text-left">
-          {/* HEADER */}
           <thead className="bg-green-800 text-white">
             <tr>
               <th className="p-3">#</th>
@@ -80,17 +79,16 @@ export default function RFIDListPage() {
             </tr>
           </thead>
 
-          {/* BODY */}
           <tbody>
             {currentDocs.map((doc, index) => (
               <tr key={doc._id} className="border-t hover:bg-gray-50">
                 {/* SL NO */}
                 <td className="p-3">{indexOfFirst + index + 1}</td>
 
-                {/* DOCUMENT IMAGE */}
+                {/* IMAGE */}
                 <td>
                   <img
-                    src={doc.coverImage}
+                    src={doc.coverImage || "/no-image.png"}
                     alt="cover"
                     className="w-12 h-12 object-cover rounded border"
                   />
@@ -99,36 +97,40 @@ export default function RFIDListPage() {
                 {/* RFID */}
                 <td className="font-medium">{doc.rfid}</td>
 
-                {/* DEPARTMENT */}
+                {/* DEPT */}
                 <td>{doc.department}</td>
 
-                {/* SUB DEPARTMENT */}
+                {/* SUB DEPT */}
                 <td>{doc.subDepartment}</td>
 
                 {/* FILE NAME */}
                 <td>{doc.fileName}</td>
 
-                {/* TAGGED BY */}
+                {/* USER */}
                 <td>
                   <div className="flex items-center gap-2">
                     <img
-                      src={doc.taggedUser?.image || "/user.png"}
-                      alt="user"
+                      src={doc.rfidTaggedBy?.profileImage || "/user.png"}
                       className="w-8 h-8 rounded-full border"
                     />
 
                     <div className="text-sm">
                       <div className="font-medium">
-                        {doc.taggedUser?.name || "Unknown"}
+                        {doc.rfidTaggedBy
+                          ? `${doc.rfidTaggedBy.firstName} ${
+                              doc.rfidTaggedBy.lastName || ""
+                            }`
+                          : "Unknown"}
                       </div>
+
                       <div className="text-gray-500 text-xs">
-                        {doc.taggedUser?.email || ""}
+                        {doc.rfidTaggedBy?.phone || ""}
                       </div>
                     </div>
                   </div>
                 </td>
 
-                {/* TAGGED DATE */}
+                {/* DATE */}
                 <td className="text-sm">
                   {doc.rfidTaggedAt
                     ? new Date(doc.rfidTaggedAt).toLocaleDateString()
@@ -145,19 +147,31 @@ export default function RFIDListPage() {
                 {/* ACTIONS */}
                 <td className="flex gap-2 justify-center py-2">
                   <button
-                    onClick={() => router.push(`/rfid/${doc._id}`)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                    onClick={() => {
+                      setLoadingId(doc._id);
+                      router.push(`/rfid/${doc._id}`);
+                    }}
+                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 flex items-center gap-2"
                   >
-                    View
+                    {loadingId === doc._id ? (
+                      <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                    ) : (
+                      "View"
+                    )}
                   </button>
 
                   <button
-                    onClick={() =>
-                      router.push(`/dashboard/file-prep/${doc._id}`)
-                    }
-                    className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                    onClick={() => {
+                      setLoadingId(doc._id);
+                      router.push(`/dashboard/file-prep/${doc._id}`);
+                    }}
+                    className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center gap-2"
                   >
-                    Next
+                    {loadingId === doc._id ? (
+                      <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                    ) : (
+                      "Next"
+                    )}
                   </button>
                 </td>
               </tr>

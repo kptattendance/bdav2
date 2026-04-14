@@ -3,61 +3,27 @@ import User from "../models/User.js";
 
 export const getRFIDTaggedDocs = async (req, res) => {
   try {
-    const docs = await Document.find({ status: "RFID_TAGGED" }).sort({
-      createdAt: -1,
-    });
+    const docs = await Document.find({ status: "RFID_TAGGED" })
+      .populate("rfidTaggedBy", "firstName lastName phone profileImage")
+      .sort({ createdAt: -1 });
 
-    // 🔥 attach user details
-    const enrichedDocs = await Promise.all(
-      docs.map(async (doc) => {
-        const user = await User.findOne({
-          clerkId: doc.rfidTaggedBy,
-        });
-
-        return {
-          ...doc._doc,
-
-          rfidTaggedByUser: user
-            ? {
-                name: `${user.firstName} ${user.lastName || ""}`,
-                phone: user.phone,
-                image: user.profileImage,
-              }
-            : null,
-        };
-      }),
-    );
-
-    res.status(200).json(enrichedDocs);
+    res.status(200).json(docs);
   } catch (error) {
     res.status(500).json({ message: "Error fetching documents", error });
   }
 };
-// 🔹 2. GET SINGLE DOCUMENT
 export const getSingleDoc = async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await Document.findById(req.params.id).populate(
+      "rfidTaggedBy",
+      "firstName lastName phone profileImage",
+    );
 
     if (!doc) {
       return res.status(404).json({ message: "Document not found" });
     }
 
-    const user = await User.findOne({
-      clerkId: doc.rfidTaggedBy,
-    });
-
-    const response = {
-      ...doc._doc,
-      rfidTaggedByUser: user
-        ? {
-            name: `${user.firstName} ${user.lastName || ""}`,
-            phone: user.phone,
-            image: user.profileImage,
-          }
-        : null,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json(doc);
   } catch (error) {
     res.status(500).json({ message: "Error fetching document", error });
   }

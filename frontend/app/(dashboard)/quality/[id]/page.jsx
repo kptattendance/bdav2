@@ -18,6 +18,7 @@ export default function QualityDetail() {
   useEffect(() => {
     axiosInstance.get(`/quality/${id}`).then((res) => {
       setDoc(res.data);
+      console.log(res.data);
     });
 
     axiosInstance.get("/users").then((res) => {
@@ -26,7 +27,10 @@ export default function QualityDetail() {
   }, [id]);
 
   const handleApprove = async () => {
+    setLoading(true);
     await axiosInstance.put(`/quality/${id}/approve`);
+    setLoading(false);
+
     alert("Approved ✅");
     router.push("/quality");
   };
@@ -51,8 +55,7 @@ export default function QualityDetail() {
     router.push("/quality");
   };
 
-  // 🔥 FILTER USERS BASED ON SELECTED STAGE
-
+  // 🔥 FILTER USERS
   const getFilteredUsers = () => {
     if (!sendToStage) return [];
 
@@ -63,16 +66,13 @@ export default function QualityDetail() {
       SCANNED: "Scanning",
     };
 
-    const requiredRole = roleMap[sendToStage];
-
-    return users.filter((u) => u.role === requiredRole);
+    return users.filter((u) => u.role === roleMap[sendToStage]);
   };
 
   if (!doc) return <div className="p-6">Loading...</div>;
 
   return (
     <div className="p-6 max-w-6xl mx-auto bg-gray-50 min-h-screen">
-      {/* HEADER */}
       <h1 className="text-2xl font-bold text-green-700 mb-6">Quality Check</h1>
 
       {/* FILE INFO */}
@@ -94,7 +94,7 @@ export default function QualityDetail() {
       <div className="bg-white rounded-xl shadow-md p-5 mb-6">
         <h2 className="font-semibold text-green-700 mb-4">Workflow Users</h2>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           <UserCard title="RFID Tagged" user={doc.rfidTaggedBy} />
           <UserCard title="Prepared" user={doc.filePreparedBy} />
           <UserCard title="Numbered" user={doc.pageNumberedBy} />
@@ -126,7 +126,6 @@ export default function QualityDetail() {
       <div className="bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-green-700 font-semibold mb-4">Quality Decision</h2>
 
-        {/* REASON */}
         <textarea
           placeholder="Enter rejection reason..."
           className="w-full rounded-lg bg-red-50 border border-red-200 p-3 mb-4 focus:ring-2 focus:ring-red-400"
@@ -134,7 +133,6 @@ export default function QualityDetail() {
           onChange={(e) => setReason(e.target.value)}
         />
 
-        {/* STAGE */}
         <select
           className="w-full mb-3 p-2 border rounded"
           value={sendToStage}
@@ -147,7 +145,6 @@ export default function QualityDetail() {
           <option value="SCANNED">Scanning</option>
         </select>
 
-        {/* 🔥 USER SELECT (FILTERED) */}
         <select
           className="w-full mb-4 p-2 border rounded"
           value={sendToUser}
@@ -162,19 +159,23 @@ export default function QualityDetail() {
           ))}
         </select>
 
-        {/* BUTTONS */}
         <div className="flex gap-4">
           <button
             onClick={handleApprove}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow"
+            disabled={loading}
+            className="bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2"
           >
-            Approve ✅
+            {loading ? (
+              <span className="animate-spin border-2 border-white border-t-transparent w-4 h-4 rounded-full"></span>
+            ) : (
+              "Approve ✅"
+            )}
           </button>
 
           <button
             onClick={handleReject}
             disabled={loading}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow"
+            className="bg-red-600 text-white px-6 py-2 rounded-lg"
           >
             {loading ? "Processing..." : "Reject & Send Back ❌"}
           </button>
@@ -208,33 +209,27 @@ const Badge = ({ label, value }) => (
   </div>
 );
 
-const UserCard = ({ title, user }) => {
-  if (!user) return null;
-
-  return (
-    <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
-      <img
-        src={user.profileImage || "/avatar.png"}
-        className="w-10 h-10 rounded-full"
-      />
-      <div>
-        <div className="text-sm font-semibold">
-          {user.firstName} {user.lastName}
-        </div>
-        <div className="text-xs text-gray-500">{user.phone}</div>
-        <div className="text-xs text-green-600">{title}</div>
+const UserCard = ({ title, user }) => (
+  <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg min-h-[70px]">
+    <img
+      src={user?.profileImage || "/avatar.png"}
+      className="w-10 h-10 rounded-full border"
+    />
+    <div>
+      <div className="text-sm font-semibold">
+        {user ? `${user.firstName} ${user.lastName || ""}` : "Not Assigned"}
       </div>
+      <div className="text-xs text-gray-500">{user?.phone || ""}</div>
+      <div className="text-xs text-green-600">{title}</div>
     </div>
-  );
-};
+  </div>
+);
 
-const ImageSection = ({ title, files }) => {
-  if (!files || files.length === 0) return null;
+const ImageSection = ({ title, files }) => (
+  <div className="mb-4">
+    <h3 className="text-sm font-semibold mb-2">{title}</h3>
 
-  return (
-    <div className="mb-4">
-      <h3 className="text-sm font-semibold mb-2">{title}</h3>
-
+    {files && files.length > 0 ? (
       <div className="grid grid-cols-4 gap-2">
         {files.map((img, i) => (
           <img
@@ -244,6 +239,8 @@ const ImageSection = ({ title, files }) => {
           />
         ))}
       </div>
-    </div>
-  );
-};
+    ) : (
+      <div className="text-gray-400 text-sm">No files uploaded</div>
+    )}
+  </div>
+);

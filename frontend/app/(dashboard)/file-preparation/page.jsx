@@ -6,13 +6,13 @@ import axiosInstance from "../../lib/axios";
 
 export default function FilePreparationPage() {
   const [documents, setDocuments] = useState([]);
+  const [loadingId, setLoadingId] = useState(null);
   const router = useRouter();
 
   const fetchDocs = async () => {
     try {
       const res = await axiosInstance.get("/file-preparation");
       setDocuments(res.data);
-      console.log(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -38,7 +38,6 @@ export default function FilePreparationPage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow overflow-hidden border">
         <table className="w-full">
-          {/* HEADER */}
           <thead className="bg-green-600 text-white text-sm sticky top-0">
             <tr>
               <th className="p-3 text-left">#</th>
@@ -49,12 +48,14 @@ export default function FilePreparationPage() {
             </tr>
           </thead>
 
-          {/* BODY */}
           <tbody>
             {documents.map((doc, i) => (
               <tr
                 key={doc._id}
-                onClick={() => router.push(`/file-preparation/${doc._id}`)}
+                onClick={() => {
+                  setLoadingId(doc._id);
+                  router.push(`/file-preparation/${doc._id}`);
+                }}
                 className="border-b hover:bg-green-50 transition cursor-pointer"
               >
                 {/* SL NO */}
@@ -76,25 +77,37 @@ export default function FilePreparationPage() {
                   {new Date(doc.receivedDate).toLocaleDateString()}
                 </td>
 
-                {/* RFID USER (UNCHANGED LOGIC) */}
+                {/* ✅ FIXED USER */}
                 <td className="p-3">
                   <div className="flex items-center gap-2">
                     <img
-                      src={doc.rfidTaggedByUser?.image || "/avatar.png"}
+                      src={doc.rfidTaggedBy?.profileImage || "/avatar.png"}
                       className="w-8 h-8 rounded-full border"
                       alt="user"
                     />
 
                     <div className="text-xs leading-tight">
                       <div className="font-semibold">
-                        {doc.rfidTaggedByUser?.name || "-"}
+                        {doc.rfidTaggedBy
+                          ? `${doc.rfidTaggedBy.firstName} ${
+                              doc.rfidTaggedBy.lastName || ""
+                            }`
+                          : "-"}
                       </div>
+
                       <div className="text-gray-500">
-                        {doc.rfidTaggedByUser?.phone || ""}
+                        {doc.rfidTaggedBy?.phone || ""}
                       </div>
                     </div>
                   </div>
                 </td>
+
+                {/* LOADING INDICATOR */}
+                {loadingId === doc._id && (
+                  <td className="p-3">
+                    <span className="animate-spin border-2 border-green-600 border-t-transparent rounded-full w-4 h-4 inline-block"></span>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

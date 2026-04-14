@@ -6,8 +6,10 @@ import axiosInstance from "../../lib/axios";
 
 export default function NumberingPage() {
   const [docs, setDocs] = useState([]);
+  const [loadingId, setLoadingId] = useState(null);
   const router = useRouter();
 
+  // 🔹 USER CARD (FIXED)
   const UserCard = ({ user }) => {
     if (!user) return <span>-</span>;
 
@@ -21,9 +23,9 @@ export default function NumberingPage() {
 
         <div className="text-xs leading-tight">
           <div className="font-semibold">
-            {user.firstName} {user.lastName}
+            {user.firstName} {user.lastName || ""}
           </div>
-          <div className="text-gray-500">{user.phone}</div>
+          <div className="text-gray-500">{user.phone || ""}</div>
         </div>
       </div>
     );
@@ -32,7 +34,6 @@ export default function NumberingPage() {
   useEffect(() => {
     axiosInstance.get("/numbering").then((res) => {
       setDocs(res.data);
-      console.log(res.data);
     });
   }, []);
 
@@ -50,7 +51,6 @@ export default function NumberingPage() {
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow overflow-hidden border">
         <table className="w-full">
-          {/* HEADER */}
           <thead className="bg-green-600 text-white text-sm sticky top-0">
             <tr>
               <th className="p-3 text-left">#</th>
@@ -59,16 +59,15 @@ export default function NumberingPage() {
               <th className="p-3 text-left">Date</th>
               <th className="p-3 text-left">RFID Tagged By</th>
               <th className="p-3 text-left">File Prepared By</th>
+              <th className="p-3 text-center">Action</th>
             </tr>
           </thead>
 
-          {/* BODY */}
           <tbody>
             {docs.map((doc, i) => (
               <tr
                 key={doc._id}
-                onClick={() => router.push(`/numbering/${doc._id}`)}
-                className="border-b hover:bg-green-50 transition cursor-pointer"
+                className="border-b hover:bg-green-50 transition"
               >
                 {/* SL NO */}
                 <td className="p-3 text-gray-500">{i + 1}</td>
@@ -97,6 +96,23 @@ export default function NumberingPage() {
                 {/* PREP USER */}
                 <td className="p-3">
                   <UserCard user={doc.filePreparedBy} />
+                </td>
+
+                {/* ACTION WITH LOADING */}
+                <td className="p-3 text-center">
+                  <button
+                    onClick={() => {
+                      setLoadingId(doc._id);
+                      router.push(`/numbering/${doc._id}`);
+                    }}
+                    className="bg-green-600 text-white px-3 py-1 rounded flex items-center gap-2 justify-center mx-auto"
+                  >
+                    {loadingId === doc._id ? (
+                      <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                    ) : (
+                      "Open"
+                    )}
+                  </button>
                 </td>
               </tr>
             ))}

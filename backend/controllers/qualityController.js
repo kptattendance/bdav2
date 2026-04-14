@@ -17,13 +17,22 @@ export const getQualityDocs = async (req, res) => {
   }
 };
 
-// 🔹 GET SINGLE
 export const getQualityDocById = async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await Document.findById(req.params.id)
+      .populate("rfidTaggedBy", "firstName lastName phone profileImage")
+      .populate("filePreparedBy", "firstName lastName phone profileImage")
+      .populate("pageNumberedBy", "firstName lastName phone profileImage")
+      .populate("scannedBy", "firstName lastName phone profileImage")
+      .populate("qualityCheckedBy", "firstName lastName phone profileImage");
+
+    if (!doc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
 
     res.json(doc);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Error", err });
   }
 };

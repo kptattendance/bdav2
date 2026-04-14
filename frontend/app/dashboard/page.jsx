@@ -36,11 +36,14 @@ export default function Dashboard() {
       if (role === "Quality") {
         router.push("/quality");
       }
-      if (role === "citizen") {
-        router.push("/citizen");
+      if (role === "FinalReview") {
+        router.push("/final-review");
       }
-      if (role === "officer") {
-        router.push("/officer");
+      if (role === "Metadata") {
+        router.push("/metadata");
+      }
+      if (role === "DepartmentUser") {
+        router.push("/department");
       }
     }
   }, [isLoaded, isSignedIn, user]);

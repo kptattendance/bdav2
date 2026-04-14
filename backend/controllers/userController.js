@@ -168,23 +168,43 @@ export const updateUser = async (req, res) => {
     if (req.file) {
       try {
         const result = await uploadToCloudinary(req.file.buffer, "users");
-
         imageUrl = result.secure_url;
       } catch (uploadErr) {
         console.error("❌ CLOUDINARY ERROR:", uploadErr);
       }
-    } else {
-      console.log("⚠️ NO IMAGE UPLOADED");
     }
 
+    // 🔥 CLERK UPDATE
     try {
+      // ✅ Update role
       await clerkClient.users.updateUser(user.clerkId, {
         publicMetadata: { role },
       });
+
+      if (email && email !== user.email) {
+        console.log("🔄 Updating Clerk Email...");
+
+        // 1️⃣ Create new email
+        const newEmail = await clerkClient.emailAddresses.createEmailAddress({
+          userId: user.clerkId,
+          emailAddress: email,
+        });
+
+        // 🔥 2️⃣ VERIFY EMAIL (CRITICAL STEP)
+        await clerkClient.emailAddresses.verifyEmailAddress(newEmail.id);
+
+        // 🔥 3️⃣ SET AS PRIMARY
+        await clerkClient.users.updateUser(user.clerkId, {
+          primaryEmailAddressID: newEmail.id,
+        });
+
+        console.log("✅ Clerk email updated + verified + primary set");
+      }
     } catch (clerkErr) {
       console.error("❌ CLERK ERROR:", clerkErr);
     }
-
+    console.log("=======================");
+    // 🔥 MONGO UPDATE
     user.firstName = firstName;
     user.lastName = lastName;
     user.phone = phone;
@@ -193,7 +213,9 @@ export const updateUser = async (req, res) => {
     user.department = department;
     user.subDepartment = subDepartment;
     user.profileImage = imageUrl;
+
     await user.save();
+
     res.json(user);
   } catch (err) {
     console.error("🔥 UPDATE USER ERROR:", err);
