@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import axiosInstance, { attachToken } from "../../../../lib/axios";
+import axiosInstance, { attachToken } from "../../../../../lib/axios";
 import { useAuth } from "@clerk/nextjs";
 
 export default function AddUserPage() {

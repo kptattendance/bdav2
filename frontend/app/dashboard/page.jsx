@@ -20,8 +20,21 @@ export default function Dashboard() {
       if (role === "admin") {
         router.push("/admin");
       }
-      if (role === "staff") {
-        router.push("/staff");
+      if (role === "RFIDTagging") {
+        router.push("/rfid");
+      }
+      if (role === "FilePreparation") {
+        router.push("/file-preparation");
+      }
+      if (role === "Numbering") {
+        router.push("/numbering");
+      }
+
+      if (role === "Scanning") {
+        router.push("/scanning");
+      }
+      if (role === "Quality") {
+        router.push("/quality");
       }
       if (role === "citizen") {
         router.push("/citizen");

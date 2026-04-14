@@ -1,26 +1,49 @@
+import "dotenv/config";
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+
 import userRoutes from "./routes/userRoutes.js";
-dotenv.config();
+import rfidRoutes from "./routes/rfidRoutes.js";
+import filePreparationRoutes from "./routes/filePreparationRoutes.js";
+import numberingRoutes from "./routes/numberingRoutes.js";
+import scanningRoutes from "./routes/scanningRoutes.js";
+import qualityRoutes from "./routes/qualityRoutes.js";
+
+import { clerkMiddleware } from "@clerk/express";
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// ✅ Connect DB
+connectDB();
+
+// Middlewares
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
-// serve uploaded files
-app.use("/uploads", express.static("uploads"));
+// Clerk middleware
+app.use(clerkMiddleware());
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
-
+// Public route
 app.get("/", (req, res) => {
-  res.send("DMS Backend Running");
+  res.send("API Running...");
 });
 
+// Routes
 app.use("/api/users", userRoutes);
-app.listen(5000, () => console.log("Server running on port 5000"));
+app.use("/api/rfid", rfidRoutes);
+app.use("/api/numbering", numberingRoutes);
+app.use("/api/file-preparation", filePreparationRoutes);
+app.use("/api/scanning", scanningRoutes);
+app.use("/api/quality", qualityRoutes);
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
