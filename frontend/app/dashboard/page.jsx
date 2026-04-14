@@ -1,36 +1,55 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function Dashboard() {
-  const { userId } = auth();
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-  if (!userId) {
-    redirect("/sign-in");
-  }
+export default function Dashboard() {
+  const { user, isLoaded, isSignedIn } = useUser();
+  const router = useRouter();
 
-  const user = await currentUser();
-  const role = user?.publicMetadata?.role;
+  useEffect(() => {
+    if (!isLoaded) return;
 
-  switch (role) {
-    case "admin":
-      redirect("/admin");
-    case "RFIDTagging":
-      redirect("/rfid");
-    case "FilePreparation":
-      redirect("/file-preparation");
-    case "Numbering":
-      redirect("/numbering");
-    case "Scanning":
-      redirect("/scanning");
-    case "Quality":
-      redirect("/quality");
-    case "FinalReview":
-      redirect("/final-review");
-    case "Metadata":
-      redirect("/metadata");
-    case "DepartmentUser":
-      redirect("/department");
-    default:
-      redirect("/");
-  }
+    if (!isSignedIn) {
+      router.replace("/sign-in");
+      return;
+    }
+
+    const role = user?.publicMetadata?.role;
+
+    switch (role) {
+      case "admin":
+        router.replace("/admin");
+        break;
+      case "RFIDTagging":
+        router.replace("/rfid");
+        break;
+      case "FilePreparation":
+        router.replace("/file-preparation");
+        break;
+      case "Numbering":
+        router.replace("/numbering");
+        break;
+      case "Scanning":
+        router.replace("/scanning");
+        break;
+      case "Quality":
+        router.replace("/quality");
+        break;
+      case "FinalReview":
+        router.replace("/final-review");
+        break;
+      case "Metadata":
+        router.replace("/metadata");
+        break;
+      case "DepartmentUser":
+        router.replace("/department");
+        break;
+      default:
+        router.replace("/dashboard");
+    }
+  }, [isLoaded, isSignedIn, user]);
+
+  return <div>Redirecting...</div>;
 }
