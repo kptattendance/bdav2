@@ -7,7 +7,9 @@ import { useParams, useRouter } from "next/navigation";
 export default function QualityDetail() {
   const { id } = useParams();
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
   const [reason, setReason] = useState("");
   const [sendToStage, setSendToStage] = useState("");

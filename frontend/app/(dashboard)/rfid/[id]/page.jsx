@@ -7,7 +7,9 @@ import { useParams, useRouter } from "next/navigation";
 export default function RFIDViewPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [doc, setDoc] = useState(null);
 
   useEffect(() => {
@@ -29,9 +31,7 @@ export default function RFIDViewPage() {
     <div className="p-6 max-w-5xl mx-auto bg-gray-50 min-h-screen">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-green-700">
-          Document Details
-        </h1>
+        <h1 className="text-2xl font-bold text-green-700">Document Details</h1>
 
         <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
           {doc.status}
@@ -103,15 +103,11 @@ export default function RFIDViewPage() {
 
 const Info = ({ label, value, highlight }) => (
   <div>
-    <div className="text-xs text-gray-400 uppercase tracking-wide">
-      {label}
-    </div>
+    <div className="text-xs text-gray-400 uppercase tracking-wide">{label}</div>
 
     <div
       className={`mt-1 ${
-        highlight
-          ? "text-green-700 font-semibold text-lg"
-          : "text-gray-800"
+        highlight ? "text-green-700 font-semibold text-lg" : "text-gray-800"
       }`}
     >
       {value || "-"}

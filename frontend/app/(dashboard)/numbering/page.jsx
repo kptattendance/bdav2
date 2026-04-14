@@ -8,7 +8,9 @@ export default function NumberingPage() {
   const [docs, setDocs] = useState([]);
   const [loadingId, setLoadingId] = useState(null);
   const router = useRouter();
+const { getToken } = useAuth();
 
+  attachToken(getToken); 
   // 🔹 USER CARD (FIXED)
   const UserCard = ({ user }) => {
     if (!user) return <span>-</span>;

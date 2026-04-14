@@ -7,7 +7,9 @@ import { useRouter } from "next/navigation";
 export default function QualityPage() {
   const [docs, setDocs] = useState([]);
   const router = useRouter();
+const { getToken } = useAuth();
 
+  attachToken(getToken); 
   const UserCell = ({ user }) => {
     if (!user) return <span className="text-gray-400">-</span>;
 

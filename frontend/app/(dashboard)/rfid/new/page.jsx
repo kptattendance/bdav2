@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 export default function RFIDPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [form, setForm] = useState({
     rfid: "",
     department: "",

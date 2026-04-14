@@ -7,7 +7,9 @@ import { Search } from "lucide-react";
 
 export default function RFIDListPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
 
+  attachToken(getToken);
   const [documents, setDocuments] = useState([]);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
