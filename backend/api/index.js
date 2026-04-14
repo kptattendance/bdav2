@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 // Public route
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("API Running...");
 });
 
