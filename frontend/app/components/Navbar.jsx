@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser, UserButton, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function Navbar() {
@@ -34,14 +34,9 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <Link href="/sign-in">
-              <button
-                className="bg-green-800 text-yellow-300 px-6 py-2 rounded-sm shadow 
-              hover:bg-green-700 hover:shadow-lg transition cursor-pointer"
-              >
-                Sign In
-              </button>
-            </Link>
+            <SignInButton mode="redirect" forceRedirectUrl="/dashboard">
+              <button>Sign In</button>
+            </SignInButton>
           )}
         </div>
       </div>
