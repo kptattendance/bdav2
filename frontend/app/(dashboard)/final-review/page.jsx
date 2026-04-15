@@ -16,7 +16,7 @@ export default function FinalReviewPage() {
       const data = Array.isArray(res.data) ? res.data : res.data.data || [];
       setDocs(data);
     });
-  }, []);
+  }, [getToken]);
 
   const UserCell = ({ user }) => {
     if (!user) return <span className="text-gray-400 text-xs">-</span>;

@@ -2,7 +2,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
-import axiosInstance, { attachToken }  from "../../../lib/axios";
+import axiosInstance, { attachToken } from "../../../lib/axios";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 export default function RFIDPage() {
@@ -23,6 +23,8 @@ export default function RFIDPage() {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,22 +41,16 @@ export default function RFIDPage() {
 
   const handleSubmit = async () => {
     if (!form.rfid || !image) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing Data",
-        text: "RFID and Image required",
-      });
+      setError("RFID and Image required");
       return;
     }
 
     if (!form.department || !form.subDepartment || !form.fileName) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing Fields",
-        text: "Department, SubDepartment, File Name required",
-      });
+      setError("Fill all required fields");
       return;
     }
+
+    setError("");
 
     const formData = new FormData();
 
@@ -63,29 +59,21 @@ export default function RFIDPage() {
     });
 
     formData.append("image", image);
-
     try {
-      Swal.fire({
-        title: "Processing...",
-        text: "Uploading & Saving Document",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
+      setSaving(true);
 
       await axiosInstance.post("/rfid", formData);
 
-      // ✅ SUCCESS ALERT
+      // ✅ SUCCESS ALERT (ONLY HERE)
       Swal.fire({
         icon: "success",
-        title: "Saved Successfully",
-        text: "Document has been created",
+        title: "RFID Tagged Successfully",
+        text: "Document saved successfully",
         timer: 1500,
         showConfirmButton: false,
       });
 
-      // 🔥 RESET FORM (THIS IS WHAT YOU NEED)
+      // ✅ reset form
       setForm({
         rfid: "",
         department: "",
@@ -101,14 +89,11 @@ export default function RFIDPage() {
       setPreview(null);
     } catch (err) {
       console.error(err);
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err.response?.data?.message || "Something went wrong",
-      });
+    } finally {
+      setSaving(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-200">
       {/* HEADER */}
@@ -252,6 +237,12 @@ export default function RFIDPage() {
           )}
         </div>
 
+        {error && (
+          <div className="text-red-600 text-center mt-4 font-medium">
+            {error}
+          </div>
+        )}
+
         {/* BUTTONS */}
         <div className="flex justify-center gap-10 mt-10 pb-10">
           <button
@@ -263,12 +254,28 @@ export default function RFIDPage() {
 
           <button
             onClick={handleSubmit}
-            className="bg-green-900 text-yellow-400 px-10 py-2 border border-yellow-500 shadow"
+            disabled={saving}
+            className="bg-green-900 text-yellow-400 px-10 py-2 border border-yellow-500 shadow flex items-center gap-2 disabled:opacity-60"
           >
-            Save
+            {saving ? (
+              <>
+                <span className="w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></span>
+                Saving...
+              </>
+            ) : (
+              "Save"
+            )}
           </button>
         </div>
       </div>
+      {saving && (
+        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
+          <div className="bg-white px-6 py-4 rounded shadow flex items-center gap-3">
+            <span className="w-6 h-6 border-2 border-green-700 border-t-transparent rounded-full animate-spin"></span>
+            Saving document...
+          </div>
+        </div>
+      )}
     </div>
   );
 }

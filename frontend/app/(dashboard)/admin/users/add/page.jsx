@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance, { attachToken } from "../../../../lib/axios";
 import { useAuth } from "@clerk/nextjs";
-
+import Swal from "sweetalert2";
 export default function AddUserPage() {
   const { id } = useParams(); // 👈 edit mode if exists
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function AddUserPage() {
     role: "",
     department: "",
   });
-
+  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -78,9 +78,36 @@ export default function AddUserPage() {
     }
   };
 
-  // 🔥 SUBMIT (CREATE / UPDATE)
+  const validateForm = () => {
+    if (!form.firstName.trim()) return "First Name is required";
+    if (!form.email.trim()) return "Email is required";
+    if (!form.phone.trim()) return "Phone is required";
+    if (!form.role) return "Role is required";
+
+    // simple email check
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(form.email)) return "Invalid email format";
+
+    // phone basic validation
+    if (form.phone.length < 10) return "Phone must be at least 10 digits";
+
+    return null;
+  };
+
   const handleSubmit = async () => {
     try {
+      const error = validateForm();
+
+      if (error) {
+        return Swal.fire({
+          icon: "warning",
+          title: "Validation Error",
+          text: error,
+        });
+      }
+
+      setLoading(true);
+
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
@@ -92,26 +119,46 @@ export default function AddUserPage() {
       }
 
       if (isEdit) {
-        // ✏️ UPDATE
         await axiosInstance.put(`/users/${id}`, formData);
-        alert("User updated successfully");
       } else {
-        // ➕ CREATE
         await axiosInstance.post("/users/add", formData);
-        alert("User created successfully");
       }
+
+      setForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        role: "",
+        department: "",
+      });
+      setImage(null);
+      setPreview(null);
+
+      await Swal.fire({
+        icon: "success",
+        title: isEdit ? "User Updated" : "User Created",
+        confirmButtonColor: "#166534",
+      });
 
       router.push("/admin/users");
     } catch (err) {
       console.error(err);
-      alert("Error saving user");
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-200">
       {/* HEADER */}
-      <div className="bg-green-900 text-yellow-400 text-center py-6 text-2xl font-bold">
+      <div className="bg-green-900  text-yellow-400 text-center py-6 text-2xl font-bold">
         {isEdit ? "Edit User" : "Add User"}
       </div>
 
@@ -186,12 +233,22 @@ export default function AddUserPage() {
       </div>
 
       {/* BUTTON */}
-      <div className="flex justify-center py-6">
+      <div className="flex justify-center  py-6">
         <button
           onClick={handleSubmit}
-          className="bg-green-800 text-yellow-400 px-8 py-2 border border-yellow-500 shadow"
+          disabled={loading}
+          className="bg-green-800 text-yellow-400 px-8 py-2 border border-yellow-500 shadow flex items-center gap-2 cursor-pointer"
         >
-          {isEdit ? "Update User" : "Add User"}
+          {loading ? (
+            <>
+              <span className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></span>
+              Saving User...
+            </>
+          ) : isEdit ? (
+            "Update User"
+          ) : (
+            "Add User"
+          )}
         </button>
       </div>
     </div>

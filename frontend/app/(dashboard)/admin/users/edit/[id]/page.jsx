@@ -122,7 +122,7 @@ export default function AddUserPage() {
           value={form.firstName}
           placeholder="First Name"
           onChange={handleChange}
-          className="p-2 border"
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
         />
 
         <input
@@ -130,7 +130,7 @@ export default function AddUserPage() {
           value={form.lastName}
           placeholder="Last Name"
           onChange={handleChange}
-          className="p-2 border"
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
         />
 
         <input
@@ -138,7 +138,7 @@ export default function AddUserPage() {
           value={form.phone}
           placeholder="Phone"
           onChange={handleChange}
-          className="p-2 border"
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
         />
 
         <input
@@ -146,7 +146,7 @@ export default function AddUserPage() {
           value={form.email}
           placeholder="Email"
           onChange={handleChange}
-          className="p-2 border"
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
         />
 
         <select
@@ -189,7 +189,7 @@ export default function AddUserPage() {
       <div className="flex justify-center py-6">
         <button
           onClick={handleSubmit}
-          className="bg-green-800 text-yellow-400 px-8 py-2 border border-yellow-500 shadow"
+          className="bg-green-800 text-yellow-400 px-8 py-2 border border-yellow-500 shadow transition transform hover:scale-105 active:scale-95"
         >
           {isEdit ? "Update User" : "Add User"}
         </button>

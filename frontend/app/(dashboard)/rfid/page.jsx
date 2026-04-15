@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axiosInstance, { attachToken }  from "../../lib/axios";
+import axiosInstance, { attachToken } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
@@ -15,16 +15,24 @@ export default function RFIDListPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingId, setLoadingId] = useState(null);
-
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 5;
-
   useEffect(() => {
     const load = async () => {
-      const res = await axiosInstance.get("/rfid/all");
-      const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+      try {
+        setLoading(true);
 
-      setDocuments(data);
+        const res = await axiosInstance.get("/rfid/all");
+        const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+
+        setDocuments(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
+
     load();
   }, []);
 
@@ -40,6 +48,16 @@ export default function RFIDListPage() {
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="flex items-center gap-3 text-green-800 font-semibold">
+          <span className="w-6 h-6 border-3 border-green-700 border-t-transparent rounded-full animate-spin"></span>
+          Loading RFID Documents...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-6">
       {/* HEADER */}
@@ -152,14 +170,18 @@ export default function RFIDListPage() {
                 {/* ACTIONS */}
                 <td className="flex gap-2 justify-center py-2">
                   <button
+                    disabled={loadingId === doc._id}
                     onClick={() => {
                       setLoadingId(doc._id);
                       router.push(`/rfid/${doc._id}`);
                     }}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 flex items-center gap-2"
+                    className="bg-blue-500 disabled:opacity-60 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 flex items-center gap-2"
                   >
                     {loadingId === doc._id ? (
-                      <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                      <>
+                        <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+                        Loading...
+                      </>
                     ) : (
                       "View"
                     )}

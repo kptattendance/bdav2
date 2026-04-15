@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import axiosInstance, { attachToken } from "../../../lib/axios";
-
+import Swal from "sweetalert2";
 export default function UsersPage() {
   const router = useRouter();
   const { getToken } = useAuth();
@@ -14,7 +14,8 @@ export default function UsersPage() {
 
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-
+  const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
@@ -23,11 +24,13 @@ export default function UsersPage() {
 
     const loadUsers = async () => {
       try {
+        setLoading(true);
         const res = await axiosInstance.get("/users");
         setUsers(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -49,18 +52,57 @@ export default function UsersPage() {
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  // ❌ DELETE
   const handleDelete = async (id) => {
-    if (!confirm("Delete user?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This user will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
+      setDeleteLoading(id);
+
       await axiosInstance.delete(`/users/${id}`);
+
       setUsers(users.filter((u) => u._id !== id));
+
+      // ✅ SUCCESS ALERT
+      Swal.fire({
+        title: "Deleted!",
+        text: "User has been deleted.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (err) {
       console.error(err);
+
+      // ❌ ERROR ALERT
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to delete user.",
+        icon: "error",
+      });
+    } finally {
+      setDeleteLoading(null);
     }
   };
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="flex items-center gap-3 text-green-800 font-semibold">
+          <span className="w-5 h-5 border-2 border-green-700 border-t-transparent rounded-full animate-spin"></span>
+          Loading Users...
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       {/* HEADER */}
@@ -85,12 +127,14 @@ export default function UsersPage() {
         {/* ADD */}
         <button
           onClick={() => router.push("/admin/users/add")}
-          className="bg-green-800 text-white px-5 py-2 rounded"
+          className="bg-green-800 cursor-pointer text-white px-5 py-2 rounded"
         >
           + Add User
         </button>
       </div>
-
+      {currentUsers.length === 0 && (
+        <div className="text-center py-10 text-gray-500">No users found</div>
+      )}
       {/* TABLE */}
       <div className="bg-white shadow rounded border overflow-hidden">
         <table className="w-full text-left">
@@ -138,16 +182,21 @@ export default function UsersPage() {
                 <td className="p-3 flex justify-center gap-2">
                   <button
                     onClick={() => router.push(`/admin/users/edit/${user._id}`)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                    className="bg-blue-500 cursor-pointer text-white px-3 py-1 rounded"
                   >
                     Edit
                   </button>
 
                   <button
                     onClick={() => handleDelete(user._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
+                    disabled={deleteLoading === user._id}
+                    className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded flex items-center gap-2"
                   >
-                    Delete
+                    {deleteLoading === user._id ? (
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
                 </td>
               </tr>
